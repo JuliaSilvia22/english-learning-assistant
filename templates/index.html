@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Ju</title>
+    
+    <!-- LINK CRUCIAL PARA O TAILWIND CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Carrega fontes fofinhas: Comfortaa para o corpo e Pacifico para o título -->
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&family=Pacifico&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            /* Fundo gradiente rosa bebê e amarelo bebê */
+            background: linear-gradient(135deg, #ffebee 0%, #fffde7 100%); 
+            font-family: 'Comfortaa', cursive; 
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .app-container {
+            background-color: #ffffff;
+            border: 2px solid #ffccbc; 
+            animation: pulse-border 2s infinite alternate; 
+            box-shadow: 0 20px 25px rgba(255, 183, 77, 0.2); 
+        }
+        .btn-primary {
+            background-color: #ffb74d; 
+            color: #ffffff;
+            font-weight: bold;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 6px 10px rgba(255, 183, 77, 0.4);
+        }
+        .btn-primary:hover {
+            background-color: #ffa726; 
+            box-shadow: 0 10px 20px rgba(255, 183, 77, 0.6);
+            transform: translateY(-3px) scale(1.02);
+        }
+        .feedback-area {
+            background-color: #fff3e0; 
+            border: 1px dashed #ffccbc; 
+            white-space: pre-wrap;
+        }
+        .text-input-style {
+            border: 3px solid #ffab91; 
+            background-color: #fff9f0; 
+        }
+        .title-font {
+            font-family: 'Pacifico', cursive; 
+        }
+
+        /* Animação de brilho na borda do container */
+        @keyframes pulse-border {
+            0% { border-color: #ffccbc; box-shadow: 0 0 15px rgba(255, 204, 188, 0.6); }
+            100% { border-color: #ff8a65; box-shadow: 0 0 25px rgba(255, 138, 101, 0.8); }
+        }
+
+        /* ESTILOS PARA O EFEITO DE DIGITAÇÃO */
+        .typing-effect {
+            display: inline;
+            border-right: .15em solid #ff8a65; /* Cursor piscando */
+            white-space: pre-wrap;
+            animation: blink-caret .75s step-end infinite;
+        }
+        .typing-effect.finished {
+            border-right: none;
+            animation: none;
+        }
+        
+        @keyframes blink-caret {
+          from, to { border-color: transparent }
+          50% { border-color: #ff8a65; }
+        }
+    </style>
+</head>
+<body class="flex flex-col justify-center items-center">
+
+    <div class="app-container w-full max-w-2xl rounded-3xl shadow-2xl p-6 sm:p-10 my-8">
+        
+        <!-- Cabeçalho com o nome Teacher Ju -->
+        <header class="text-center mb-8">
+            <h1 class="text-5xl sm:text-6xl title-font text-pink-500 mb-2 transform hover:scale-105 transition-transform duration-300">
+                💖 Teacher <span class="text-yellow-400">Ju</span> 🌸
+            </h1>
+            <p class="text-gray-600 text-lg font-comfortaa">A sua amiga que te ajuda a brilhar no inglês! ✨</p>
+        </header>
+
+        <!-- Formulário de Input -->
+        <form action="/answer" method="POST" class="space-y-6">
+            <div>
+                <label for="user_answer" class="block text-xl font-semibold text-pink-600 mb-3">
+                    ✍️ Sobre o que você quer aprender hoje, coração?
+                </label>
+                <textarea id="user_answer" name="user_answer" rows="4" required 
+                          class="text-input-style w-full p-4 rounded-xl focus:border-pink-400 transition duration-300 resize-none text-gray-800 text-lg shadow-inner"
+                          placeholder="Ex: I want to talk about my hobbies...">{{ user_input }}</textarea>
+            </div>
+            
+            <button type="submit" id="submitButton"
+                    class="btn-primary w-full flex items-center justify-center text-white font-bold text-xl py-3 rounded-xl focus:outline-none focus:ring-4 focus:ring-yellow-300">
+                Corrigir com carinho! 🥰✨
+            </button>
+        </form>
+
+        <!-- Área de Correção da IA (Feedback) -->
+        <div class="mt-10">
+            <h2 class="text-2xl font-bold text-pink-600 mb-4 flex items-center">
+                <span class="mr-2">🌈</span> O Feedback da Teacher Ju:
+            </h2>
+        
+            <div id="correctionOutput" 
+                 class="feedback-area p-6 rounded-2xl text-gray-800 leading-relaxed shadow-md min-h-[100px]">
+                
+                {% if correction %}
+                    <!-- O texto simples da correção será colocado neste elemento vazio -->
+                    <div id="typingTextContainer" class="text-gray-800"></div>
+                    <span id="rawCorrectionData" class="hidden">{{ correction | safe }}</span>
+                {% else %}
+                    <p class="text-gray-500 italic">Estou aqui para te ajudar a brilhar no inglês! Digite algo acima e clique em "Corrigir com carinho!". 🌟</p>
+                {% endif %}
+            </div>
+
+            <!-- Exibe o erro da API, se houver -->
+            {% if correction and 'Erro:' in correction %}
+                <div class="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                    <p class="font-bold">Oopsie! Um probleminha! 😱</p>
+                    <p>{{ correction }}</p>
+                </div>
+            {% endif %}
+
+        </div>
+
+        <footer class="mt-10 text-center text-sm text-gray-400 font-comfortaa">
+            Feito com carinho e muita magia de IA! ✨
+        </footer>
+
+    </div>
+
+    <!-- Script para manter o campo de texto preenchido após a submissão e controlar a animação -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const userInput = document.getElementById('user_answer');
+            const originalValue = "{{ user_input }}";
+            
+            // 1. Preenche o campo se houver texto prévio
+            if (originalValue && originalValue !== 'None') {
+                userInput.value = originalValue;
+            }
+
+            // 2. Lógica da Animação de Digitação
+            const rawTextElement = document.getElementById('rawCorrectionData');
+            const typingContainer = document.getElementById('typingTextContainer');
+
+            if (rawTextElement && typingContainer) {
+                // Remove caracteres HTML (como <br>) para usar apenas o texto puro da Teacher Ju
+                const correctionText = rawTextElement.textContent.trim();
+                
+                let i = 0;
+                // Velocidade de digitação (15ms por caractere para ser rápido)
+                const speed = 15; 
+                
+                // Adiciona a classe de cursor piscante
+                typingContainer.classList.add('typing-effect');
+
+                function typeWriter() {
+                    if (i < correctionText.length) {
+                        typingContainer.innerHTML += correctionText.charAt(i);
+                        i++;
+                        setTimeout(typeWriter, speed);
+                    } else {
+                        // Quando terminar, remove o cursor piscante
+                        typingContainer.classList.add('finished');
+                    }
+                }
+                
+                // Inicia a digitação
+                typeWriter();
+            }
+        });
+    </script>
+</body>
+</html>
